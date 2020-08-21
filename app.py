@@ -26,10 +26,6 @@ def check_follow(data):
         WHERE user_id = :user_id and follow_user_id = :follow_user_id
     """), data).fetchone()
 
-    print('##########')
-    print(check_follow_table)
-    print('##########')
-
     return True if check_follow_table else False
 
 def insert_follow(data):
@@ -136,15 +132,7 @@ def create_app(test_config=None):
         if check_follow(data):
             return jsonify({'message':'Already Followed'}), 400
         else:
-            app.database.execute(text("""
-                INSERT INTO  users_follow_list (
-                    user_id,
-                    follow_user_id
-                ) VALUES (
-                    :user_id,
-                    :follow_user_id
-                )
-            """), data)
+            insert_follow(data)
             return '', 200
 
     @app.route('/unfollow', methods=['DELETE'])
