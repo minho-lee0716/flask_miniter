@@ -171,3 +171,7 @@ def create_app(test_config=None):
         })
 
     return app
+
+    @app.route('/test'), methods=['GET'])
+    def testapi():
+        return 'Hello World'
