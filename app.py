@@ -8,6 +8,8 @@ from flask      import (
     current_app
 )
 
+import bcrypt
+
 '''
 Default JSON encoder는 set를 JSON으로 변환할 수 없다.
 그러므로 커스텀 엔코더를 작성해서 set을 list로 변환하여
@@ -60,6 +62,12 @@ def create_app(test_config=None):
     def sign_up():
         # 정보 받아오기
         new_user    = request.json
+        new_user['password'] = bcrypt.hashpw(
+            new_user['password'].encode('utf-8'),
+            bcrypt.gensalt()
+        )
+
+
 
         # 받아온 정보로 사용자 생성
         # new_user_id에는 생성된 사용자의 id가 저장
@@ -76,6 +84,9 @@ def create_app(test_config=None):
                 :password
             )
         """), new_user).lastrowid
+        new_user_info = get_user(new_user_id) 
+
+        return jsonify(new_user_info)
 
         # row는 생성된 사용자의 정보를 읽음
         row = current_app.database.execute(text("""
