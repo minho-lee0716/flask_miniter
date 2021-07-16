@@ -138,6 +138,7 @@ def create_app(test_config=None):
         return jsonify(created_user)
 
     @app.route('/tweet', methods=['POST'])
+    @login_required
     def tweet():
         user_tweet = request.json
         tweet      = user_tweet['tweet']
@@ -145,16 +146,7 @@ def create_app(test_config=None):
         if len(tweet) > 300:
             return '300자를 초과했습니다', 400
 
-        app.database.execute(text("""
-            INSERT INTO tweets (
-                user_id,
-                tweet
-            ) VALUES (
-                :id,
-                :tweet
-            )
-        """), user_tweet)
-
+        insert_tweet(user_tweet)
         return '', 200
 
     @app.route('/follow', methods=['POST'])
