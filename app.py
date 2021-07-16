@@ -150,26 +150,18 @@ def create_app(test_config=None):
         return '', 200
 
     @app.route('/follow', methods=['POST'])
+    @login_required
     def follow():
-        data = request.json
+        payload = request.json
+        insert_follow(payload)
 
-        if data['user_id'] == data['follow_user_id']:
-            return jsonify({'message':'Can not follow yourself'}), 400
-
-        if check_follow(data):
-            return jsonify({'message':'Already Followed'}), 400
-        else:
-            insert_follow(data)
-            return '', 200
+        return '', 200
 
     @app.route('/unfollow', methods=['DELETE'])
+    @login_required
     def unfollow():
-        data = request.json
-
-        app.database.execute(text("""
-            DELETE FROM users_follow_list
-            WHERE user_id = :user_id and follow_user_id = :follow_user_id
-        """), data)
+        payload = request.json
+        insert_unfollow(payload)
 
         return '', 200
 
